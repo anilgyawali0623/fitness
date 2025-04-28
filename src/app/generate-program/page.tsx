@@ -9,7 +9,7 @@ const GeneralProgramPage = () => {
   const [callActive, setCallActive] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<any[]>([]);
   const [callEnded, setCallEnded] = useState(false);
   const { user } = useUser();
   const router = useRouter();
@@ -58,11 +58,21 @@ const GeneralProgramPage = () => {
     const handleSpeechEnd = () => {
       setIsSpeaking(false)
     }
-    const handleMessage = (message: any) => { }
+    const handleMessage = (message: any) => {
+      if (message.type === "transcript" && message.transcriptType === "final") {
+        const newMessage = { content: message.transcript, role: message.role }
+
+        setMessages(prev => [...prev, newMessage])
+      }
+
+
+    }
     const handleError = (error: any) => {
       console.log("vapi error");
       setConnecting(false);
       setCallActive(false);
+
+
 
     }
 
@@ -97,7 +107,7 @@ const GeneralProgramPage = () => {
         await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW!, {
           variableValues: {
             full_name: fullName,
-
+            user_id: user?.id
           }
         })
       } catch (error) {
@@ -107,8 +117,10 @@ const GeneralProgramPage = () => {
     }
   }
   return (
-    <div>
+    <div className="flex flex-col min-h-screen text-foreground overflow-hidden  pb-6 pt-24">
+      <div className="container mx-auto px-4 h-full max-w-5xl">
 
+      </div>
     </div>
   )
 }
